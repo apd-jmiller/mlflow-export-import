@@ -48,7 +48,7 @@ def write_export_file(dir, file, script, mlflow_attr, info_attr=None):
     """
     Write standard formatted JSON file.
     """
-    dir = _fs.mk_dbfs_path(dir)
+    dir = dir #_fs.mk_dbfs_path(dir)
     path = os.path.join(dir, file)
     info_attr = { ExportFields.INFO: info_attr} if info_attr else {}
     mlflow_attr = { ExportFields.MLFLOW: mlflow_attr}
