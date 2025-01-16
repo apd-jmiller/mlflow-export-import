@@ -65,7 +65,7 @@ def write_file(path, content, file_type=None):
     """
     Write to JSON, YAML or text file.
     """
-    path = _fs.mk_local_path(path)
+    # path = _fs.mk_local_path(path)
     if path.endswith(".json"):
         with open(path, "w", encoding="utf-8") as f:
             f.write(json.dumps(content, indent=2)+"\n")
