@@ -67,16 +67,39 @@ def write_file(path, content, file_type=None):
     """
     Write to JSON, YAML or text file.
     """
-    # path = _fs.mk_local_path(path)
-    if path.endswith(".json"):
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(json.dumps(content, indent=2)+"\n")
-    elif _is_yaml(path, file_type):
-        with open(path, "w", encoding="utf-8") as f:
-            yaml.dump(content, f)
+    ## path = _fs.mk_local_path(path)
+    # if path.endswith(".json"):
+    #     with open(path, "w", encoding="utf-8") as f:
+    #         f.write(json.dumps(content, indent=2)+"\n")
+    # elif _is_yaml(path, file_type):
+    #     with open(path, "w", encoding="utf-8") as f:
+    #         yaml.dump(content, f)
+    # else:
+    #     with open(path, "wb" ) as f:
+    #         f.write(content)
+    if path.startswith("dbfs:/"):
+        if path.endswith(".json"):
+            json_content = json.dumps(content, indent=2) + "\n"
+            dbutils.fs.put(path, json_content, overwrite=True)
+        elif _is_yaml(path, file_type):
+            yaml_content = yaml.dump(content)
+            dbutils.fs.put(path, yaml_content, overwrite=True)
+        else:
+            if isinstance(content, str):
+                dbutils.fs.put(path, content, overwrite=True)
+            else:
+                raise ValueError("Binary content is not supported for dbfs:/ paths.")
     else:
-        with open(path, "wb" ) as f:
-            f.write(content)
+        # Fallback for local file paths
+        if path.endswith(".json"):
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(json.dumps(content, indent=2) + "\n")
+        elif _is_yaml(path, file_type):
+            with open(path, "w", encoding="utf-8") as f:
+                yaml.dump(content, f)
+        else:
+            with open(path, "wb") as f:
+                f.write(content)
 
 
 def read_file(path, file_type=None):
