@@ -7,6 +7,7 @@ from mlflow_export_import.common.timestamp_utils import ts_now_seconds, ts_now_f
 from mlflow_export_import.common import filesystem as _fs
 from mlflow_export_import.common.source_tags import ExportFields
 from mlflow_export_import.common.pkg_version import get_version
+from databricks.sdk.runtime import *
 
 
 export_file_version = "2"
