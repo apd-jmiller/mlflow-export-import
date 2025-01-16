@@ -11,7 +11,7 @@ def mk_dbfs_path(path):
 
 
 def mk_local_path(path):
-    return path.replace("dbfs:","/dbfs")
+    return path #path.replace("dbfs:","/dbfs")
 
 
 def exists(path):
