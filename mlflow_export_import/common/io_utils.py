@@ -106,13 +106,38 @@ def read_file(path, file_type=None):
     """
     Read a JSON, YAML or text file.
     """
-    with open(_fs.mk_local_path(path), "r", encoding="utf-8") as f:
+    # with open(_fs.mk_local_path(path), "r", encoding="utf-8") as f:
+    #     if path.endswith(".json"):
+    #         return json.loads(f.read())
+    #     elif _is_yaml(path, file_type):
+    #         return yaml.safe_load(f)
+    #     else:
+    #         return f.read()
+    if path.startswith("dbfs:/"):
+        # Use Spark for reading files
         if path.endswith(".json"):
-            return json.loads(f.read())
+            # Read JSON content as a string
+            content = spark.read.text(path).collect()
+            json_content = "\n".join(row.value for row in content)
+            return json.loads(json_content)
         elif _is_yaml(path, file_type):
-            return yaml.safe_load(f)
+            # Read YAML content as a string
+            content = spark.read.text(path).collect()
+            yaml_content = "\n".join(row.value for row in content)
+            return yaml.safe_load(yaml_content)
         else:
-            return f.read()
+            # For plain text files
+            content = spark.read.text(path).collect()
+            return "\n".join(row.value for row in content)
+    else:
+        # Fallback for local file paths
+        with open(path, "r", encoding="utf-8") as f:
+            if path.endswith(".json"):
+                return json.loads(f.read())
+            elif _is_yaml(path, file_type):
+                return yaml.safe_load(f)
+            else:
+                return f.read()
 
 
 def get_info(export_dct):
